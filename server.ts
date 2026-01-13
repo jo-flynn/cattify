@@ -1,4 +1,5 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import { router } from './routes';
 
 export const app = express();
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
@@ -6,10 +7,8 @@ const PORT: number = parseInt(process.env.PORT || '3000', 10);
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Basic health check endpoint
-app.get('/health', (_req: Request, res: Response) => {
-  res.json({ status: 'ok' });
-});
+// Routes
+app.use(router);
 
 // Start server only if this file is run directly
 if (require.main === module) {
