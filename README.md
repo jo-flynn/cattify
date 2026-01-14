@@ -24,7 +24,7 @@ curl -X POST http://localhost:3000/cattify \
 
 ## Configuration
 
-Update `MAX_CATTIFY_REPLACEMENTS` in `.env` to adjust the replacement limit.
+Update `MAX_CATTIFY_REPLACEMENTS` in `.env` to adjust the replacement limit, then restart the service.
 
 ## API Specification
 
@@ -42,10 +42,12 @@ curl -X POST http://localhost:3000/cattify \
 {
   results: any // processed JSON,
   replacementsCount: number // total number of replacements
-  limitReached: boolean, // rate limit indicator
+  limitReached: boolean, // replacement limit indicator
 }
 ```
 
 ## Notes on Design
 
-I decided to implement a basic Express API
+I decided to implement a basic Express API with tests written with Jest & Supertest. The maximum replacement limit is configured as an environment variable so the service can be adjusted without code changes, just a restart. Normally `.env` wouldn't be committed to the repo to avoid exposing sensitive information, but I took the liberty of including it so this example works with minimum manual configuration.
+
+Scalability could be improved by offloading `cattify` processing to a request queue, implementing a caching for identical requests, and implementing rate limiting at the request level to mitigate denial-of-service attacks.
