@@ -45,3 +45,7 @@ curl -X POST http://localhost:3000/cattify \
   limitReached: boolean, // rate limit indicator
 }
 ```
+
+## Notes on Design
+
+I decided to implement a basic Express API

@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
-    "start": "tsc && node dist/server.js",
+    "start": "tsc && NODE_ENV=production node dist/server.js",
     "dev": "ts-node server.ts",
     "dev:watch": "ts-node-dev --respawn server.ts",
     "test": "jest",
