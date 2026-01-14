@@ -15,7 +15,36 @@ export interface CattifyResult {
 export function cattifyJson(data: any, limit: number): CattifyResult {
   let replacementsCount = 0;
 
-  function processValue(value: any): any {
+  /**
+   * Replaces "dog" with "cat" in a string, respecting the replacement limit.
+   * @param str - The string to process
+   * @returns The processed string
+   */
+  const replaceDogInString = (str: string): string => {
+    if (!str.includes('dog')) {
+      return str;
+    }
+
+    const matches = str.match(/dog/g);
+    const matchCount = matches ? matches.length : 0;
+    
+    if (matchCount === 0 || replacementsCount >= limit) {
+      return str;
+    }
+
+    const availableSlots = limit - replacementsCount;
+    const replacementsToMake = Math.min(matchCount, availableSlots);
+    
+    if (replacementsToMake > 0) {
+      const newString = str.replace(/dog/g, 'cat');
+      replacementsCount += replacementsToMake;
+      return newString;
+    }
+
+    return str;
+  };
+
+  const processValue = (value: any): any => {
     // Handle null and undefined
     if (value === null || value === undefined) {
       return value;
@@ -32,16 +61,7 @@ export function cattifyJson(data: any, limit: number): CattifyResult {
       
       for (const [key, val] of Object.entries(value)) {
         // Process the key - replace "dog" with "cat"
-        let newKey = key;
-        const matches = key.match(/dog/g);
-        const matchCount = matches ? matches.length : 0;
-        if (key.includes('dog') && replacementsCount < limit) {
-          // Count occurrences of "dog" in the key
-          const matches = key.match(/dog/g);
-          const matchCount = matches ? matches.length : 0;
-          newKey = key.replace(/dog/g, 'cat');
-          replacementsCount += matchCount;
-        }
+        const newKey = replaceDogInString(key);
 
         // Process the value (even if we're at the limit, we still need to process structure)
         result[newKey] = processValue(val);
@@ -51,20 +71,8 @@ export function cattifyJson(data: any, limit: number): CattifyResult {
     }
 
     // Handle strings - replace "dog" substring with "cat"
-    if (typeof value === 'string' && value.includes('dog')) {
-      if (replacementsCount < limit) {
-        const matches = value.match(/dog/g);
-        const matchCount = matches ? matches.length : 0;
-        if (matchCount > 0) {
-          const availableSlots = limit - replacementsCount;
-          const replacementsToMake = Math.min(matchCount, availableSlots);
-          if (replacementsToMake > 0) {
-            const newValue = value.replace(/dog/g, 'cat');
-            replacementsCount += replacementsToMake;
-            return newValue;
-          }
-        }
-      }
+    if (typeof value === 'string') {
+      return replaceDogInString(value);
     }
 
     // Return primitive values as-is

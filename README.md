@@ -8,8 +8,12 @@ Build an HTTP endpoint that takes arbitrary JSON payloads, and replaces any refe
 
 ## Run & Test
 
-`npm start`
-`npm test`
+* `npm start` - starts app in prod mode
+* `npm test` - run unit tests
+
+## Configuration
+
+Update `MAX_CATTIFY_REPLACEMENTS` in `.env` to adjust the replacement limit.
 
 ### POST data using curl
 
@@ -21,24 +25,25 @@ curl -X POST http://localhost:3000/cattify \
 ```
 
 ### Dev
-`npm run dev:watch`
-`npm run test:watch`
+* `npm run dev:watch` - start dev server
+* `npm run test:watch` - start tests in watch mode
 
-## Spec
+## API Specification
 
-#### `POST` /cattify
+### `POST` /cattify
 
-Input
+#### Request
 ```bash
 curl -X POST http://localhost:3000/cattify \
   -H "Content-Type: application/json" \
   --data-binary @data/test-data.json
 ```
 
-Output
-```js
+#### Response
+```ts
 {
-  results: {} // processed JSON,
-  replacementsCount: 50 // total number of replacements
-  limitReached: true, // 
+  results: any // processed JSON,
+  replacementsCount: number // total number of replacements
+  limitReached: boolean, // rate limit indicator
 }
+```
