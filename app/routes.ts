@@ -5,31 +5,29 @@ import fs from 'fs';
 
 export const router = Router();
 
-// Resolve worker path once at module load
+// Resolve worker path 
 const workerPath1 = path.join(__dirname, 'cattify.worker.js');
 const workerPath2 = path.join(__dirname, '..', 'dist', 'app', 'cattify.worker.js');
 const workerPath = fs.existsSync(workerPath1) ? workerPath1 : workerPath2;
+
+// Validate max replacements to avoid doing it per request
+// There is probably a cleaner way to do this.
+const maxReplacementsEnv = process.env.MAX_CATTIFY_REPLACEMENTS;
+
+if (maxReplacementsEnv === undefined) {
+  throw new Error('MAX_CATTIFY_REPLACEMENTS is not set');
+}
+
+const maxReplacements = parseInt(maxReplacementsEnv, 10);
+
+if (isNaN(maxReplacements) || maxReplacements < 0) {
+  throw new Error('MAX_CATTIFY_REPLACEMENTS must be a non-negative integer');
+}
 
 // Cattify endpoint - replaces "dog" with "cat" in JSON payloads
 router.post('/cattify', async (req: Request, res: Response) => {
   try {
     const jsonBody = req.body;
-    
-    // Get max replacements from environment variable
-    const maxReplacementsEnv = process.env.MAX_CATTIFY_REPLACEMENTS;
-
-    if (maxReplacementsEnv === undefined) {
-      console.error('MAX_CATTIFY_REPLACEMENTS is not set');
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-
-    const maxReplacements = parseInt(maxReplacementsEnv, 10) 
-    
-    // Validate maxReplacements
-    if ((isNaN(maxReplacements!) || maxReplacements! < 0)) {
-      console.error('MAX_CATTIFY_REPLACEMENTS must be a non-negative integer');
-      return res.status(500).json({ error: 'Internal server error' });
-    }
     
     // Process the JSON using a worker
     const worker = new Worker(workerPath);

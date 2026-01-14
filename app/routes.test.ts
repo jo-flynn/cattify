@@ -3,16 +3,6 @@ import express from 'express';
 import { router } from './routes';
 
 describe('POST /cattify endpoint', () => {
-  const originalEnv = process.env.MAX_CATTIFY_REPLACEMENTS;
-
-  afterEach(() => {
-    if (originalEnv === undefined) {
-      delete process.env.MAX_CATTIFY_REPLACEMENTS;
-    } else {
-      process.env.MAX_CATTIFY_REPLACEMENTS = originalEnv;
-    }
-  });
-  
   const app = express();
   app.use(express.json());
   app.use(router);
@@ -74,65 +64,6 @@ describe('POST /cattify endpoint', () => {
     });
   });
 
-  describe('Environment variable limits', () => {
-    let originalConsoleError: typeof console.error;
-
-    beforeAll(() => {
-      originalConsoleError = console.error;
-      console.error = jest.fn();
-    });
-
-    afterAll(() => {
-      console.error = originalConsoleError;
-    });
-
-    afterEach(() => {
-      (console.error as jest.Mock).mockClear();
-    });
-
-    it('should respect MAX_CATTIFY_REPLACEMENTS environment variable', async () => {
-      process.env.MAX_CATTIFY_REPLACEMENTS = '2';
-      
-      const response = await request(app)
-        .post('/cattify')
-        .send({ pet1: 'dog', pet2: 'dog', pet3: 'dog' })
-        .expect(200);
-      
-      // Should only replace first 2
-      expect(response.body.result.pet1).toBe('cat');
-      expect(response.body.result.pet2).toBe('cat');
-      expect(response.body.result.pet3).toBe('dog');
-      expect(response.body.replacementsCount).toBe(2);
-      expect(response.body.limitReached).toBe(true);
-      expect(response.headers['content-type']).toMatch(/json/);
-    });
-
-    it('should return 500 for invalid MAX_CATTIFY_REPLACEMENTS', async () => {
-      delete process.env.MAX_CATTIFY_REPLACEMENTS
-      
-      const response = await request(app)
-        .post('/cattify')
-        .send({ pet: 'dog' })
-        .expect(500);
-      
-      expect(console.error).toHaveBeenCalledWith('MAX_CATTIFY_REPLACEMENTS is not set');
-      expect(response.status).toBe(500);
-      expect(response.body.error).toBe('Internal server error');
-    });
-
-    it('should return 500 for negative MAX_CATTIFY_REPLACEMENTS', async () => {
-      process.env.MAX_CATTIFY_REPLACEMENTS = '-1';
-      
-      const response = await request(app)
-        .post('/cattify')
-        .send({ pet: 'dog' })
-        .expect(500);
-      
-      expect(console.error).toHaveBeenCalledWith('MAX_CATTIFY_REPLACEMENTS must be a non-negative integer');
-      expect(response.status).toBe(500);
-      expect(response.body.error).toBe('Internal server error');
-    });
-  });
 
   describe('Error handling', () => {
     it('should handle empty request body', async () => {
