@@ -1,0 +1,80 @@
+{
+  "pet": "dog",
+  "dog": "animal",
+  "pets": [
+    {
+      "type": "dog",
+      "name": "Rex",
+      "dogname": "Spot",
+      "hotdog": "favorite food"
+    },
+    {
+      "type": "cat",
+      "name": "Fluffy",
+      "doghouse": "shelter",
+      "favoriteToy": "dog"
+    }
+  ],
+  "animalData": {
+    "dog": {
+      "breed": "Labrador",
+      "doghouse": "wooden",
+      "favoriteActivity": "dog"
+    },
+    "cat": {
+      "breed": "Persian",
+      "doghouse": "not applicable",
+      "preference": "dog"
+    }
+  },
+  "settings": {
+    "doghouse": {
+      "location": "backyard",
+      "size": "large",
+      "occupant": "dog"
+    },
+    "food": {
+      "hotdog": "yes",
+      "dogfood": "premium",
+      "preference": "dog"
+    }
+  },
+  "nested": {
+    "level1": {
+      "level2": {
+        "dog": "deep value",
+        "doghouse": "deep structure",
+        "data": {
+          "pet": "dog",
+          "dogname": "Max",
+          "hotdog": "sometimes",
+          "anotherValue": "dog dog duck"
+        }
+      },
+      "dog": "mid level",
+      "arrayOfObjects": [
+        {
+          "dog": "array item 1",
+          "doghouse": "item 1 structure"
+        },
+        {
+          "pet": "dog",
+          "hotdog": "array item 2"
+        }
+      ]
+    }
+  },
+  "mixed": {
+    "dog": "single",
+    "dogdog": "double",
+    "doghouse": "compound",
+    "hotdog": "compound2",
+    "values": ["dog", "cat", "dog", "bird"],
+    "keys": {
+      "dog": "value1",
+      "doghouse": "value2",
+      "hotdog": "value3",
+      "dogfood": "value4"
+    }
+  }
+}

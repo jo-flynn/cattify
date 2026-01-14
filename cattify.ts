@@ -6,15 +6,14 @@ export interface CattifyResult {
 
 /**
  * Recursively replaces "dog" with "cat" in JSON objects and arrays.
- * Replaces "dog" in keys (substring replacement) and exact value matches.
+ * Replaces "dog" in keys and values (substring replacement).
  * 
  * @param data - The data to process (object, array, or primitive)
- * @param maxReplacements - Optional limit on number of replacements
+ * @param limit - Optional limit on number of replacements
  * @returns Object containing the transformed data, replacement count, and limit status
  */
-export function cattifyJson(data: any, maxReplacements?: number): CattifyResult {
+export function cattifyJson(data: any, limit: number): CattifyResult {
   let replacementsCount = 0;
-  const limit = maxReplacements ?? Infinity;
 
   function processValue(value: any): any {
     // Handle null and undefined
@@ -34,15 +33,14 @@ export function cattifyJson(data: any, maxReplacements?: number): CattifyResult 
       for (const [key, val] of Object.entries(value)) {
         // Process the key - replace "dog" with "cat"
         let newKey = key;
+        const matches = key.match(/dog/g);
+        const matchCount = matches ? matches.length : 0;
         if (key.includes('dog') && replacementsCount < limit) {
           // Count occurrences of "dog" in the key
           const matches = key.match(/dog/g);
           const matchCount = matches ? matches.length : 0;
-          
-          if (matchCount > 0) {
-            newKey = key.replace(/dog/g, 'cat');
-            replacementsCount += matchCount;
-          }
+          newKey = key.replace(/dog/g, 'cat');
+          replacementsCount += matchCount;
         }
 
         // Process the value (even if we're at the limit, we still need to process structure)
@@ -52,11 +50,20 @@ export function cattifyJson(data: any, maxReplacements?: number): CattifyResult 
       return result;
     }
 
-    // Handle strings - replace exact match "dog" with "cat"
-    if (typeof value === 'string' && value === 'dog') {
+    // Handle strings - replace "dog" substring with "cat"
+    if (typeof value === 'string' && value.includes('dog')) {
       if (replacementsCount < limit) {
-        replacementsCount++;
-        return 'cat';
+        const matches = value.match(/dog/g);
+        const matchCount = matches ? matches.length : 0;
+        if (matchCount > 0) {
+          const availableSlots = limit - replacementsCount;
+          const replacementsToMake = Math.min(matchCount, availableSlots);
+          if (replacementsToMake > 0) {
+            const newValue = value.replace(/dog/g, 'cat');
+            replacementsCount += replacementsToMake;
+            return newValue;
+          }
+        }
       }
     }
 
@@ -65,7 +72,7 @@ export function cattifyJson(data: any, maxReplacements?: number): CattifyResult 
   }
 
   const result = processValue(data);
-  const limitReached = maxReplacements !== undefined && replacementsCount >= maxReplacements;
+  const limitReached = replacementsCount >= limit;
 
   return {
     result,
