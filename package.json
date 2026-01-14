@@ -1,5 +1,5 @@
 {
-  "name": "tech-lead-tech-test",
+  "name": "cattify",
   "version": "1.0.0",
   "description": "HTTP endpoint that replaces 'dog' with 'cat' in JSON payloads",
   "main": "dist/server.js",
