@@ -75,19 +75,19 @@ describe('POST /cattify endpoint', () => {
   });
 
   describe('Environment variable limits', () => {
-    let originalConsoleLog: typeof console.log;
+    let originalConsoleError: typeof console.error;
 
     beforeAll(() => {
-      originalConsoleLog = console.log;
-      console.log = jest.fn();
+      originalConsoleError = console.error;
+      console.error = jest.fn();
     });
 
     afterAll(() => {
-      console.log = originalConsoleLog;
+      console.error = originalConsoleError;
     });
 
     afterEach(() => {
-      (console.log as jest.Mock).mockClear();
+      (console.error as jest.Mock).mockClear();
     });
 
     it('should respect MAX_CATTIFY_REPLACEMENTS environment variable', async () => {
@@ -115,7 +115,7 @@ describe('POST /cattify endpoint', () => {
         .send({ pet: 'dog' })
         .expect(500);
       
-      expect(console.log).toHaveBeenCalledWith('MAX_CATTIFY_REPLACEMENTS is not set');
+      expect(console.error).toHaveBeenCalledWith('MAX_CATTIFY_REPLACEMENTS is not set');
       expect(response.status).toBe(500);
       expect(response.body.error).toBe('Internal server error');
     });
@@ -128,7 +128,7 @@ describe('POST /cattify endpoint', () => {
         .send({ pet: 'dog' })
         .expect(500);
       
-      expect(console.log).toHaveBeenCalledWith('MAX_CATTIFY_REPLACEMENTS must be a non-negative integer');
+      expect(console.error).toHaveBeenCalledWith('MAX_CATTIFY_REPLACEMENTS must be a non-negative integer');
       expect(response.status).toBe(500);
       expect(response.body.error).toBe('Internal server error');
     });

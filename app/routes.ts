@@ -13,11 +13,11 @@ router.post('/cattify', (req: Request, res: Response) => {
   try {
     const jsonBody = req.body;
     
-    // Get max replacements from environment variable (optional)
+    // Get max replacements from environment variable
     const maxReplacementsEnv = process.env.MAX_CATTIFY_REPLACEMENTS;
 
     if (maxReplacementsEnv === undefined) {
-      console.log('MAX_CATTIFY_REPLACEMENTS is not set');
+      console.error('MAX_CATTIFY_REPLACEMENTS is not set');
       return res.status(500).json({ error: 'Internal server error' });
     }
 
@@ -25,7 +25,7 @@ router.post('/cattify', (req: Request, res: Response) => {
     
     // Validate maxReplacements if provided
     if ((isNaN(maxReplacements!) || maxReplacements! < 0)) {
-      console.log('MAX_CATTIFY_REPLACEMENTS must be a non-negative integer');
+      console.error('MAX_CATTIFY_REPLACEMENTS must be a non-negative integer');
       return res.status(500).json({ error: 'Internal server error' });
     }
     
